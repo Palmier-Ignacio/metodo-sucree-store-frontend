@@ -1,0 +1,1 @@
+export default function Footer(){return <footer className="footer"><div className="container footer__content"><strong>Método Sucrée Store</strong><span>Biblioteca digital para emprendedoras en pastelería.</span></div></footer>}
