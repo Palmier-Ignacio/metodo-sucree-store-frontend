@@ -1,34 +1,47 @@
 import { Link, useNavigate } from 'react-router-dom'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { useCart } from '../context/CartContext'
 import { createPreference } from '../services/api'
 import { money, discountedPrice } from '../utils/formatters'
 
 export default function Checkout() {
-  const { items, total, removeItem } = useCart()
+  const { items, total, removeItem, refreshCart, refreshingCart } = useCart()
   const { user, getAccessToken } = useAuth()
   const [error, setError] = useState('')
   const [loadingPayment, setLoadingPayment] = useState(false)
   const nav = useNavigate()
 
-  async function pay() {
-    if (!user) {
-      nav('/login', { state: { from: { pathname: '/checkout' } } })
+  useEffect(() => {
+    refreshCart()
+  }, [])
+
+ async function pay() {
+  if (!user) {
+    nav('/login', { state: { from: { pathname: '/checkout' } } })
+    return
+  }
+
+  try {
+    setLoadingPayment(true)
+    setError('')
+
+    const freshItems = await refreshCart()
+
+    if (!freshItems.length) {
+      setError('No hay productos disponibles para pagar. Revisá tu carrito.')
       return
     }
 
-    try {
-      setLoadingPayment(true)
-      setError('')
-      const preference = await createPreference(items, getAccessToken)
-      window.location.href = preference.init_point
-    } catch (err) {
-      setError(err.message)
-    } finally {
-      setLoadingPayment(false)
-    }
+    const preference = await createPreference(freshItems, getAccessToken)
+
+    window.location.href = preference.init_point
+  } catch (err) {
+    setError(err.message)
+  } finally {
+    setLoadingPayment(false)
   }
+}
 
   return (
     <section className="page section">
@@ -39,7 +52,7 @@ export default function Checkout() {
           <p>* Al aprobarse el pago, se asignarán los productos a tu biblioteca.</p>
 
           {items.length === 0 ? (
-            <div className="empty-card"><h3>Tu carrito está vacío</h3><Link className="button" to="/catalogo">Ver catálogo</Link></div>
+            <div className="empty-card"><h3>Tu carrito está vacío</h3><Link className="button" to="/tienda">Ir a la tienda</Link></div>
           ) : (
             <div className="cart-list">
               {items.map((item) => (
@@ -71,7 +84,7 @@ export default function Checkout() {
           <div><span>Productos</span><strong>{items.length}</strong></div>
           <div><span>Total</span><strong>{money(total)}</strong></div>
           {error && <span className="form-error">{error}</span>}
-          <button className="button" disabled={!items.length || loadingPayment} onClick={pay}>{loadingPayment ? 'Iniciando pago...' : 'Pagar con Mercado Pago'}</button>
+          <button className="button" disabled={!items.length || loadingPayment || refreshingCart} onClick={pay}>{loadingPayment ? 'Iniciando pago...' : refreshingCart ? 'Actualizando carrito...' : 'Pagar con Mercado Pago'}</button>
           {/* <small>El pago se inicia desde el backend para proteger Mercado Pago, órdenes y asignación de accesos.</small> */}
         </aside>
       </div>

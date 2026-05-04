@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { getAdminOrders, getAdminProducts, getAdminSummary } from '../services/api'
-import { money } from '../utils/formatters'
+import { money, formatOrderStatus } from '../utils/formatters'
 
 export default function Admin() {
   const { getAccessToken } = useAuth()
@@ -67,7 +67,7 @@ export default function Admin() {
               {orders.length === 0 ? <p>No hay órdenes registradas todavía.</p> : (
                 <table>
                   <thead><tr><th>ID</th><th>Fecha</th><th>Estado</th><th>Total</th><th>Comprador</th></tr></thead>
-                  <tbody>{orders.map((order) => <tr key={order.id}><td>{order.id}</td><td>{order.created_at || order.date}</td><td>{order.status}</td><td>{money(order.total)}</td><td>{order.user_email || order.customer_email || '-'}</td></tr>)}</tbody>
+                  <tbody>{orders.map((order) => <tr key={order.id}><td>{order.id}</td><td>{order.created_at || order.date}</td><td>{formatOrderStatus(order.status)}</td><td>{money(order.total)}</td><td>{order.user_email || order.customer_email || '-'}</td></tr>)}</tbody>
                 </table>
               )}
             </div>

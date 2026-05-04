@@ -17,6 +17,8 @@ const initialForm = {
   is_active: false,
   long_description: '',
   discount_percent: '',
+  is_featured_home: false,
+  featured_home_order: 0,
 }
 
 export default function AdminProductForm() {
@@ -51,6 +53,8 @@ export default function AdminProductForm() {
           is_active: Boolean(product.is_active),
           long_description: product.long_description || '',
           discount_percent: product.discount_percent || '',
+          is_featured_home: Boolean(product.is_featured_home),
+          featured_home_order: product.featured_home_order || 0,
         })
       } catch (err) {
         setError(err.message)
@@ -84,6 +88,7 @@ export default function AdminProductForm() {
         ...form,
         price: Number(form.price),
         discount_percent: Number(form.discount_percent || 0),
+        featured_home_order: Number(form.featured_home_order || 0),
       }
 
       if (isEditing) {
@@ -198,6 +203,30 @@ export default function AdminProductForm() {
         <label className="admin-checkbox">
           <input name="is_active" type="checkbox" checked={form.is_active} onChange={handleChange} />
           Producto activo en la tienda
+        </label>
+
+        <label className="admin-checkbox">
+          <input
+            name="is_featured_home"
+            type="checkbox"
+            checked={form.is_featured_home}
+            onChange={handleChange}
+          />
+          Mostrar en home
+        </label>
+
+        <label>
+          Orden en home
+          <select
+            name="featured_home_order"
+            value={form.featured_home_order}
+            onChange={handleChange}
+          >
+            <option value="0">Sin orden</option>
+            <option value="1">Posición 1</option>
+            <option value="2">Posición 2</option>
+            <option value="3">Posición 3</option>
+          </select>
         </label>
 
         <button className="button" disabled={saving}>

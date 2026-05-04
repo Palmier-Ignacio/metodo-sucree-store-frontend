@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import { getAdminSummary } from '../../services/api'
 import { useAuth } from '../../context/AuthContext'
-import { money } from '../../utils/formatters'
 
 export default function AdminDashboard() {
   const { getAccessToken } = useAuth()
@@ -40,8 +39,8 @@ export default function AdminDashboard() {
           <strong>{summary.ordersCount || 0}</strong>
         </div>
         <div>
-          <span>Ingresos</span>
-          <strong>{money(summary.revenue || 0)}</strong>
+          <span>Usuarios</span>
+          <strong>{summary.usersCount || 0}</strong>
         </div>
       </div>
     </>

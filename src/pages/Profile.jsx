@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
-import { FaDownload, FaLockOpen } from 'react-icons/fa'
+import { FaDownload, FaLockOpen, FaQuestionCircle   } from 'react-icons/fa'
 import { useAuth } from '../context/AuthContext'
 import { createDownloadUrl, getMyLibrary } from '../services/api'
-import { money } from '../utils/formatters'
+import { money, formatOrderStatus } from '../utils/formatters'
 
 export default function Profile() {
   const { user, profile, loading: loadingAuth, getAccessToken } = useAuth()
@@ -95,8 +95,8 @@ export default function Profile() {
           <p className="eyebrow">Mi cuenta</p>
           <h2>{profile?.full_name || user?.user_metadata?.full_name || 'Usuario Sucrée'}</h2>
           <p>{user?.email}</p>
-          <span>
-            <FaLockOpen /> Accesos activos: {library.length}
+          <span title='Son los productos a los que podes acceder actualmente'>
+            <FaLockOpen /> Accesos activos: {library.length}  <FaQuestionCircle  />
           </span>
         </aside>
 
@@ -158,8 +158,8 @@ export default function Profile() {
             <div className="orders-list">
               {orders.map((order) => (
                 <article key={order.id}>
-                  <span>{order.created_at || order.date}</span>
-                  <strong>{order.status}</strong>
+                  <span>{new Date(order.created_at).toLocaleDateString('es-AR')}</span>
+                  <strong>{formatOrderStatus(order.status)}</strong>
                   <b>{money(order.total)}</b>
                 </article>
               ))}

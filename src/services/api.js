@@ -19,6 +19,20 @@ async function authHeaders(getTokenOrToken) {
   return token ? { Authorization: `Bearer ${token}` } : {}
 }
 
+
+function buildQuery(params = {}) {
+  const query = new URLSearchParams()
+
+  Object.entries(params).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== '') {
+      query.set(key, value)
+    }
+  })
+
+  const qs = query.toString()
+  return qs ? `?${qs}` : ''
+}
+
 async function request(path, options = {}) {
   const { method = 'GET', body, token, headers = {} } = options
 
@@ -49,6 +63,17 @@ export function getFeaturedProducts() {
 
 export function getProductById(id) {
   return request(`/products/${id}`)
+}
+
+export function getActiveBanner() {
+  return request('/banners/active')
+}
+
+export function sendContactMessage(payload) {
+  return request('/contact', {
+    method: 'POST',
+    body: payload,
+  })
 }
 
 /* Checkout */
@@ -85,10 +110,14 @@ export function getAdminSummary(token) {
   return request('/admin/summary', { token })
 }
 
+export function getAdminRevenue(params = {}, token) {
+  return request(`/admin/revenue${buildQuery(params)}`, { token })
+}
+
 /* Admin products */
 
-export function getAdminProducts(token) {
-  return request('/admin/products', { token })
+export function getAdminProducts(token, params = {}) {
+  return request(`/admin/products${buildQuery(params)}`, { token })
 }
 
 export function getAdminProductById(id, token) {
@@ -113,14 +142,18 @@ export function updateAdminProduct(id, payload, token) {
 
 /* Admin orders */
 
-export function getAdminOrders(token) {
-  return request('/admin/orders', { token })
+export function getAdminOrders(token, params = {}) {
+  return request(`/admin/orders${buildQuery(params)}`, { token })
+}
+
+export function getAdminOrderById(id, token) {
+  return request(`/admin/orders/${id}`, { token })
 }
 
 /* Admin users */
 
-export function getAdminUsers(token) {
-  return request('/admin/users', { token })
+export function getAdminUsers(token, params = {}) {
+  return request(`/admin/users${buildQuery(params)}`, { token })
 }
 
 export function getAdminUserById(id, token) {
@@ -145,6 +178,35 @@ export function grantAdminUserProduct(userId, productId, token) {
 
 export function revokeAdminUserProduct(userId, productId, token) {
   return request(`/admin/users/${userId}/products/${productId}`, {
+    method: 'DELETE',
+    token,
+  })
+}
+
+/* Admin banners */
+
+export function getAdminBanners(token, params = {}) {
+  return request(`/admin/banners${buildQuery(params)}`, { token })
+}
+
+export function createAdminBanner(payload, token) {
+  return request('/admin/banners', {
+    method: 'POST',
+    body: payload,
+    token,
+  })
+}
+
+export function updateAdminBanner(id, payload, token) {
+  return request(`/admin/banners/${id}`, {
+    method: 'PUT',
+    body: payload,
+    token,
+  })
+}
+
+export function deleteAdminBanner(id, token) {
+  return request(`/admin/banners/${id}`, {
     method: 'DELETE',
     token,
   })
