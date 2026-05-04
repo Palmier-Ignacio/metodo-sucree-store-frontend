@@ -17,13 +17,16 @@ import AdminProductForm from './pages/admin/AdminProductForm'
 import AdminUsers from './pages/admin/AdminUsers'
 import AdminUserDetail from './pages/admin/AdminUserDetail'
 import AdminOrders from './pages/admin/AdminOrders'
+import AdminOrderDetail from './pages/admin/AdminOrderDetail'
+import AdminRevenue from './pages/admin/AdminRevenue'
+import AdminBanners from './pages/admin/AdminBanners'
 
 export default function App() {
   return (
     <Routes>
       <Route element={<StoreLayout />}>
         <Route path="/" element={<Home />} />
-        <Route path="/catalogo" element={<Catalog />} />
+        <Route path="/tienda" element={<Catalog />} />
         <Route path="/producto/:id" element={<Product />} />
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/success" element={<Success />} />
@@ -38,6 +41,9 @@ export default function App() {
               <Route path="usuarios" element={<AdminUsers />} />
               <Route path="usuarios/:id" element={<AdminUserDetail />} />
               <Route path="ordenes" element={<AdminOrders />} />
+              <Route path="ordenes/:id" element={<AdminOrderDetail />} />
+              <Route path="ingresos" element={<AdminRevenue />} />
+              <Route path="banners" element={<AdminBanners />} />
             </Route>
           </Route>
         </Route>

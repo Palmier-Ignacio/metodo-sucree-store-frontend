@@ -7,7 +7,7 @@ import { money, productType, discountedPrice } from '../utils/formatters'
 
 export default function Product() {
   const { id } = useParams()
-  const { addItem } = useCart()
+  const { addItem, items, ownedProductIds } = useCart()
   const [product, setProduct] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -34,16 +34,16 @@ export default function Product() {
   }
 
   if (error || !product) {
-    return <section className="page section"><div className="container empty-card"><h1>Producto no encontrado</h1><p>{error}</p><Link className="button" to="/catalogo">Volver al catálogo</Link></div></section>
+    return <section className="page section"><div className="container empty-card"><h1>Producto no encontrado</h1><p>{error}</p><Link className="button" to="/tienda">Volver a la tienda</Link></div></section>
   }
 
   const unavailable = product.status && product.status !== 'published'
+  const inCart = items.some((item) => item.id === product.id)
+  const alreadyOwned = ownedProductIds.has(product.id)
 
   return (
     <section className="page section">
       <div className="container">
-
-        {/* BLOQUE SUPERIOR (RESUMEN) */}
         <div className="product-detail">
           <div className="product-detail__cover">
             {product.cover_url ? (
@@ -55,20 +55,16 @@ export default function Product() {
             )}
           </div>
 
-          <div>
+          <div className="product-detail__content">
             {product.badge && (
-              <span className="product-badge">
-                {product.badge}
-              </span>
+              <span className="product-badge">{product.badge}</span>
             )}
 
             <p className="eyebrow">{productType(product.type)}</p>
             <h1>{product.title}</h1>
 
             {product.subtitle && (
-              <h3 className="product-detail__subtitle">
-                {product.subtitle}
-              </h3>
+              <h3 className="product-detail__subtitle">{product.subtitle}</h3>
             )}
 
             <p>{product.description}</p>
@@ -82,37 +78,42 @@ export default function Product() {
               )}
             </ul>
 
-            <div className="detail-actions">
+            <div className="detail-buy-box">
               <div className="price-box price-box--detail">
-                {Number(product.discount_percent) > 0 && (
-                  <span className="old-price">{money(product.price)}</span>
-                )}
+                <div className="price-row">
+                  {Number(product.discount_percent) > 0 && (
+                    <span className="old-price">{money(product.price)}</span>
+                  )}
 
-                <strong className="price">
-                  {product.price ? money(discountedPrice(product.price, product.discount_percent)) : 'Próximamente'}
-                </strong>
+                  <strong className="price">
+                    {product.price
+                      ? money(discountedPrice(product.price, product.discount_percent))
+                      : 'Próximamente'}
+                  </strong>
+                </div>
 
                 {Number(product.discount_percent) > 0 && (
                   <small>{product.discount_percent}% OFF</small>
                 )}
               </div>
 
-              <button
-                className="button"
-                disabled={unavailable}
-                onClick={() => addItem(product)}
-              >
-                Agregar al carrito
-              </button>
+              <div className="detail-actions">
+                <button
+                  className="button"
+                  disabled={unavailable || inCart || alreadyOwned}
+                  onClick={() => addItem(product)}
+                >
+                  {alreadyOwned ? 'Ya lo tenés en tu biblioteca' : inCart ? 'Ya está en el carrito' : 'Agregar al carrito'}
+                </button>
 
-              <Link className="button button--outline" to="/checkout">
-                Ir al carrito
-              </Link>
+                <Link className="button button--outline" to="/checkout">
+                  Ir al carrito
+                </Link>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* BLOQUE INFERIOR (DETALLE LARGO) */}
         {product.long_description && (
           <div className="product-long-section">
             <div className="product-long-section__content">
@@ -124,7 +125,6 @@ export default function Product() {
             </div>
           </div>
         )}
-
       </div>
     </section>
   )

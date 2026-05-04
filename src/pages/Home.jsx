@@ -2,10 +2,23 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import logo from '../assets/logo-isotipo.png'
 import ProductCard from '../components/ProductCard'
-import { getFeaturedProducts } from '../services/api'
+import { getActiveBanner, getFeaturedProducts, sendContactMessage } from '../services/api'
+
+const initialContactForm = {
+  firstName: '',
+  lastName: '',
+  email: '',
+  subject: '',
+  message: '',
+}
 
 export default function Home() {
   const [featuredProducts, setFeaturedProducts] = useState([])
+  const [activeBanner, setActiveBanner] = useState(null)
+  const [contactForm, setContactForm] = useState(initialContactForm)
+  const [contactLoading, setContactLoading] = useState(false)
+  const [contactError, setContactError] = useState('')
+  const [contactSuccess, setContactSuccess] = useState('')
 
   useEffect(() => {
     async function loadFeaturedProducts() {
@@ -17,36 +30,101 @@ export default function Home() {
       }
     }
 
+    async function loadActiveBanner() {
+      try {
+        const data = await getActiveBanner()
+        setActiveBanner(data.banner || data || null)
+      } catch {
+        setActiveBanner(null)
+      }
+    }
+
     loadFeaturedProducts()
+    loadActiveBanner()
   }, [])
+
+  function handleContactChange(event) {
+    const { name, value } = event.target
+
+    setContactForm((prev) => ({
+      ...prev,
+      [name]: value,
+    }))
+  }
+
+  async function handleContactSubmit(event) {
+    event.preventDefault()
+
+    try {
+      setContactLoading(true)
+      setContactError('')
+      setContactSuccess('')
+
+      await sendContactMessage(contactForm)
+      setContactForm(initialContactForm)
+      setContactSuccess('Tu mensaje fue enviado correctamente. Será respondido dentro de las siguientes 48hs hábiles.')
+    } catch (err) {
+      setContactError(err.message)
+    } finally {
+      setContactLoading(false)
+    }
+  }
 
   return (
     <>
       <section className="hero-store">
         <div className="container hero-store__grid">
           <div>
-            <p className="eyebrow">Biblioteca digital</p>
-            <h1>Comprá, aprendé y volvé a descargar tus ebooks cuando quieras</h1>
-            <p>Una store pensada como plataforma: usuarios, compras asociadas, biblioteca personal y base escalable para futuros cursos.</p>
+            <p className="eyebrow">Ebooks de pastelería</p>
+            <h1>Aprendé recetas, técnicas y estrategias para emprender con pastelería</h1>
+            <p>
+              Guías digitales pensadas para ayudarte a producir mejor, organizar tus recetas
+              y vender con más seguridad desde tu emprendimiento.
+            </p>
+
             <div className="hero__actions">
-              <Link className="button" to="/catalogo">Ver ebooks</Link>
+              <Link className="button" to="/tienda">Ver ebooks</Link>
               <Link className="button button--outline" to="/biblioteca">Mi biblioteca</Link>
             </div>
           </div>
+
           <img src={logo} alt="Método Sucrée" />
         </div>
       </section>
+
+      {activeBanner?.image_url && (
+        <section className="section home-banner-section">
+          <div className="container">
+            {activeBanner.link_url ? (
+              <a className="home-banner" href={activeBanner.link_url} target="_blank" rel="noreferrer">
+                <img src={activeBanner.image_url} alt={activeBanner.alt_text || activeBanner.title || 'Banner'} />
+              </a>
+            ) : (
+              <div className="home-banner">
+                <img src={activeBanner.image_url} alt={activeBanner.alt_text || activeBanner.title || 'Banner'} />
+              </div>
+            )}
+          </div>
+        </section>
+      )}
 
       {featuredProducts.length > 0 && (
         <section className="section">
           <div className="container">
             <p className="eyebrow">Productos destacados</p>
+
             <div className="section-title">
-              <h2>Recetas para producir y vender</h2>
-              <p>Todos los productos quedan vinculados a tu cuenta.</p>
+              <h2>Recursos para vender más y trabajar mejor</h2>
+              <p>
+                Material descargable para aplicar en tu cocina, mejorar tus procesos
+                y potenciar tu emprendimiento pastelero.
+              </p>
             </div>
+
             <div className="products-grid">
-              {featuredProducts.slice(0, 3).map((product) => <ProductCard key={product.id} product={product} />)}
+              {featuredProducts.slice(0, 3).map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
             </div>
           </div>
         </section>
@@ -54,11 +132,106 @@ export default function Home() {
 
       <section className="section section--light">
         <div className="container stats-grid">
-          <div><strong>01</strong><h3>Login y cuenta</h3><p>Registro, acceso y compras conectadas al usuario.</p></div>
-          <div><strong>02</strong><h3>Biblioteca</h3><p>Descarga de PDFs desde el perfil, incluso después de comprar.</p></div>
-          <div><strong>03</strong><h3>Admin</h3><p>Control de productos, órdenes y accesos asignados desde backend.</p></div>
+          <div>
+            <strong>01</strong>
+            <h3>Aprendizaje práctico</h3>
+            <p>Contenido claro, directo y pensado para aplicar en productos reales.</p>
+          </div>
+
+          <div>
+            <strong>02</strong>
+            <h3>Descarga inmediata</h3>
+            <p>Accedé a tus ebooks comprados desde tu biblioteca personal.</p>
+          </div>
+
+          <div>
+            <strong>03</strong>
+            <h3>Para emprender</h3>
+            <p>Recetas, organización y herramientas para vender con más confianza.</p>
+          </div>
         </div>
       </section>
+
+      <section className="section contact-section">
+        <div className="container contact-grid">
+          <div>
+            <p className="eyebrow">Contacto</p>
+            <h2>Escribinos</h2>
+            <p>
+              Dejanos tu consulta y te responderemos al correo que indiques en el formulario.
+            </p>
+          </div>
+
+          <form className="contact-form" onSubmit={handleContactSubmit}>
+            {contactError && <p className="form-error">{contactError}</p>}
+            {contactSuccess && <p className="form-success">{contactSuccess}</p>}
+
+            <div className="contact-form__row">
+              <label>
+                Nombre
+                <input name="firstName" value={contactForm.firstName} onChange={handleContactChange} required />
+              </label>
+
+              <label>
+                Apellido
+                <input name="lastName" value={contactForm.lastName} onChange={handleContactChange} required />
+              </label>
+            </div>
+
+            <label>
+              Correo electrónico
+              <input name="email" type="email" value={contactForm.email} onChange={handleContactChange} required />
+            </label>
+
+            <label>
+              Asunto
+              <input name="subject" value={contactForm.subject} onChange={handleContactChange} required />
+            </label>
+
+            <label>
+              Mensaje
+              <textarea name="message" rows="6" value={contactForm.message} onChange={handleContactChange} required />
+            </label>
+
+            <button className="button" disabled={contactLoading}>
+              {contactLoading ? 'Enviando...' : 'Enviar mensaje'}
+            </button>
+          </form>
+        </div>
+      </section>
+
+      <section className="section">
+  <div className="container contact-info-grid">
+    
+    <div>
+      <p className="eyebrow">Información</p>
+      <h2>Datos de contacto</h2>
+      <p>
+        También podés comunicarte con nosotros por otros medios.
+      </p>
+    </div>
+
+    <div className="contact-info-cards">
+
+      <div className="contact-card">
+        <strong>Email</strong>
+        <p>metodosucree@gmail.com</p>
+      </div>
+
+      <div className="contact-card">
+        <strong>Instagram</strong>
+        <p>@metodosucree</p>
+      </div>
+
+      <div className="contact-card">
+        <strong>Tiktok</strong>
+        <p>@metodosucree</p>
+      </div>
+
+    </div>
+
+  </div>
+</section>
     </>
   )
 }

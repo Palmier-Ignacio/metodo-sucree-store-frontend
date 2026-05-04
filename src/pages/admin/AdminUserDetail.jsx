@@ -8,7 +8,7 @@ import {
   updateAdminUser,
 } from '../../services/api'
 import { useAuth } from '../../context/AuthContext'
-import { money } from '../../utils/formatters'
+import { money, formatOrderStatus, shortDate, formatUserRole  } from '../../utils/formatters'
 
 export default function AdminUserDetail() {
   const { id } = useParams()
@@ -29,11 +29,11 @@ export default function AdminUserDetail() {
 
       const [userData, productsData] = await Promise.all([
         getAdminUserById(id, token),
-        getAdminProducts(token),
+        getAdminProducts(token, { page: 1, pageSize: 100 }),
       ])
 
       setUser(userData)
-      setProducts(productsData)
+      setProducts(productsData.products || productsData.items || productsData.data || productsData || [])
       setRole(userData.role || 'customer')
     } catch (err) {
       setError(err.message)
@@ -99,8 +99,8 @@ export default function AdminUserDetail() {
           <label>
             Rol
             <select value={role} onChange={(e) => setRole(e.target.value)}>
-              <option value="customer">Customer</option>
-              <option value="admin">Admin</option>
+              <option value="customer">Cliente</option>
+              <option value="admin">Administrador</option>
             </select>
           </label>
 
@@ -178,8 +178,8 @@ export default function AdminUserDetail() {
           <tbody>
             {orders.map((order) => (
               <tr key={order.id}>
-                <td>{order.created_at}</td>
-                <td>{order.status}</td>
+                <td>{shortDate(order.created_at)}</td>
+                <td>{formatOrderStatus(order.status)}</td>
                 <td>{money(order.total)}</td>
               </tr>
             ))}

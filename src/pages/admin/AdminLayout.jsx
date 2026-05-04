@@ -13,6 +13,8 @@ export default function AdminLayout() {
             <NavLink to="/admin/productos">Productos</NavLink>
             <NavLink to="/admin/usuarios">Usuarios</NavLink>
             <NavLink to="/admin/ordenes">Órdenes</NavLink>
+            <NavLink to="/admin/ingresos">Ingresos</NavLink>
+            <NavLink to="/admin/banners">Banners</NavLink>
           </nav>
         </aside>
 
