@@ -91,6 +91,13 @@ export function createPreference(items, token) {
   })
 }
 
+export function syncCheckoutOrder(orderId, token) {
+  return request(`/checkout/sync/${orderId}`, {
+    method: 'POST',
+    token,
+  })
+}
+
 /* User */
 
 export function getMyLibrary(token) {
