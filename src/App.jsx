@@ -20,36 +20,46 @@ import AdminOrders from './pages/admin/AdminOrders'
 import AdminOrderDetail from './pages/admin/AdminOrderDetail'
 import AdminRevenue from './pages/admin/AdminRevenue'
 import AdminBanners from './pages/admin/AdminBanners'
+import EbookViewer from './pages/EbookViewer'
+import ScrollToTop from './components/ScrollToTop'
 
 export default function App() {
   return (
-    <Routes>
-      <Route element={<StoreLayout />}>
-        <Route path="/" element={<Home />} />
-        <Route path="/tienda" element={<Catalog />} />
-        <Route path="/producto/:id" element={<Product />} />
-        <Route path="/checkout" element={<Checkout />} />
-        <Route path="/success" element={<Success />} />
-        <Route element={<ProtectedRoute />}>
-          <Route path="/biblioteca" element={<Profile />} />
-          <Route element={<ProtectedRoute adminOnly />}>
-            <Route path="/admin" element={<AdminLayout />}>
-              <Route index element={<AdminDashboard />} />
-              <Route path="productos" element={<AdminProducts />} />
-              <Route path="productos/nuevo" element={<AdminProductForm />} />
-              <Route path="productos/:id/editar" element={<AdminProductForm />} />
-              <Route path="usuarios" element={<AdminUsers />} />
-              <Route path="usuarios/:id" element={<AdminUserDetail />} />
-              <Route path="ordenes" element={<AdminOrders />} />
-              <Route path="ordenes/:id" element={<AdminOrderDetail />} />
-              <Route path="ingresos" element={<AdminRevenue />} />
-              <Route path="banners" element={<AdminBanners />} />
+    <>
+      <ScrollToTop />
+
+      <Routes>
+        <Route element={<StoreLayout />}>
+          <Route path="/" element={<Home />} />
+          <Route path="/tienda" element={<Catalog />} />
+          <Route path="/producto/:id" element={<Product />} />
+          <Route path="/checkout" element={<Checkout />} />
+          <Route path="/success" element={<Success />} />
+
+          <Route element={<ProtectedRoute />}>
+            <Route path="/biblioteca" element={<Profile />} />
+            <Route path="/biblioteca/:productId" element={<EbookViewer />} />
+
+            <Route element={<ProtectedRoute adminOnly />}>
+              <Route path="/admin" element={<AdminLayout />}>
+                <Route index element={<AdminDashboard />} />
+                <Route path="productos" element={<AdminProducts />} />
+                <Route path="productos/nuevo" element={<AdminProductForm />} />
+                <Route path="productos/:id/editar" element={<AdminProductForm />} />
+                <Route path="usuarios" element={<AdminUsers />} />
+                <Route path="usuarios/:id" element={<AdminUserDetail />} />
+                <Route path="ordenes" element={<AdminOrders />} />
+                <Route path="ordenes/:id" element={<AdminOrderDetail />} />
+                <Route path="ingresos" element={<AdminRevenue />} />
+                <Route path="banners" element={<AdminBanners />} />
+              </Route>
             </Route>
           </Route>
         </Route>
-      </Route>
-      <Route path="/login" element={<Login />} />
-      <Route path="*" element={<NotFound />} />
-    </Routes>
+
+        <Route path="/login" element={<Login />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </>
   )
 }

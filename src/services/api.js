@@ -100,6 +100,13 @@ export function syncCheckoutOrder(orderId, token) {
 
 /* User */
 
+export function checkEmailExists(email) {
+  return request('/auth/check-email', {
+    method: 'POST',
+    body: { email },
+  })
+}
+
 export function getMyLibrary(token) {
   return request('/me/library', { token })
 }

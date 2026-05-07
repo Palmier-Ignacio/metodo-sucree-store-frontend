@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext'
 import { useCart } from '../context/CartContext'
 import { createPreference } from '../services/api'
 import { money, discountedPrice } from '../utils/formatters'
+import { SiMercadopago } from "react-icons/si";
 
 export default function Checkout() {
   const { items, total, removeItem, refreshCart, refreshingCart } = useCart()
@@ -16,32 +17,32 @@ export default function Checkout() {
     refreshCart()
   }, [])
 
- async function pay() {
-  if (!user) {
-    nav('/login', { state: { from: { pathname: '/checkout' } } })
-    return
-  }
-
-  try {
-    setLoadingPayment(true)
-    setError('')
-
-    const freshItems = await refreshCart()
-
-    if (!freshItems.length) {
-      setError('No hay productos disponibles para pagar. Revisá tu carrito.')
+  async function pay() {
+    if (!user) {
+      nav('/login', { state: { from: { pathname: '/checkout' } } })
       return
     }
 
-    const preference = await createPreference(freshItems, getAccessToken)
+    try {
+      setLoadingPayment(true)
+      setError('')
 
-    window.location.href = preference.init_point
-  } catch (err) {
-    setError(err.message)
-  } finally {
-    setLoadingPayment(false)
+      const freshItems = await refreshCart()
+
+      if (!freshItems.length) {
+        setError('No hay productos disponibles para pagar. Revisá tu carrito.')
+        return
+      }
+
+      const preference = await createPreference(freshItems, getAccessToken)
+
+      window.location.href = preference.init_point
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setLoadingPayment(false)
+    }
   }
-}
 
   return (
     <section className="page section">
@@ -84,7 +85,21 @@ export default function Checkout() {
           <div><span>Productos</span><strong>{items.length}</strong></div>
           <div><span>Total</span><strong>{money(total)}</strong></div>
           {error && <span className="form-error">{error}</span>}
-          <button className="button" disabled={!items.length || loadingPayment || refreshingCart} onClick={pay}>{loadingPayment ? 'Iniciando pago...' : refreshingCart ? 'Actualizando carrito...' : 'Pagar con Mercado Pago'}</button>
+          <button
+            className="button"
+            disabled={!items.length || loadingPayment || refreshingCart}
+            onClick={pay}
+          >
+            {loadingPayment ? (
+              'Iniciando pago...'
+            ) : refreshingCart ? (
+              'Actualizando carrito...'
+            ) : (
+              <>
+                Pagar con Mercado Pago <SiMercadopago className='mp'/>
+              </>
+            )}
+          </button>
           {/* <small>El pago se inicia desde el backend para proteger Mercado Pago, órdenes y asignación de accesos.</small> */}
         </aside>
       </div>

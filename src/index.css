@@ -103,7 +103,7 @@ p {
     text-transform: uppercase
 }
 
-.button {
+.button , .admin-actions .button{
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -119,16 +119,25 @@ p {
     transition: .2s ease
 }
 
-.button:hover {
-    transform: translateY(-2px);
-    background: #d098a4
+.link-portfolio{
+    text-decoration: underline;
+}
+
+.mp{
+    font-size: 28px;
 }
 
 .button--outline,
-.button--ghost {
+.button--ghost,
+.admin-actions .button.button--outline{
     background: transparent;
     box-shadow: none;
     border-color: var(--gold)
+}
+
+.button:hover, .admin-actions .button--outline:hover {
+    transform: translateY(-2px);
+    background: #d098a4
 }
 
 .button--small {
@@ -142,7 +151,8 @@ p {
     background: transparent;
     color: var(--chocolate);
     font-weight: 700;
-    text-decoration: underline
+    text-decoration: underline;
+    text-align: center;
 }
 
 .navbar {
@@ -510,12 +520,19 @@ p {
 
 .form-error {
     color: #9c2f2f;
-    font-weight: 700
+    font-weight: 700;
+    margin: 0;
 }
 
 .form-success {
     color: #417143;
-    font-weight: 700
+    font-weight: 700;
+    margin: 0;
+}
+.btn--send-tienda{
+    display: flex;
+    justify-self: center;
+    margin-top: 24px;
 }
 
 .checkout-grid {
@@ -1314,7 +1331,51 @@ p {
     color: var(--taupe);
 }
 
+.ebook-viewer {
+  position: relative;
 
+  width: 100%;
+  height: calc(100vh - 120px);
+
+  overflow: hidden;
+
+  border-radius: 24px;
+
+  background: #fff;
+}
+
+.ebook-viewer__iframe {
+  width: 100%;
+  height: calc(100% + 72px);
+
+  margin-top: -64px;
+
+  border: none;
+
+  display: block;
+}
+
+.ebook-viewer__overlay {
+  position: absolute;
+
+  top: 0;
+  left: 0;
+  right: 0;
+
+  height: 72px;
+
+  background: #fff;
+
+  z-index: 10;
+
+  pointer-events: none;
+}
+
+.ebook-viewer__overlay-title{
+    font-weight: bold;
+    text-align: center;
+    /* padding-left: 20px; */
+}
 
 
 @media (max-width:900px) {

@@ -3,6 +3,9 @@ import { Link } from 'react-router-dom'
 import logo from '../assets/logo-isotipo.png'
 import ProductCard from '../components/ProductCard'
 import { getActiveBanner, getFeaturedProducts, sendContactMessage } from '../services/api'
+import { FaArrowRight, FaInstagram, FaTiktok} from "react-icons/fa";
+import { MdEmail } from "react-icons/md";
+
 
 const initialContactForm = {
   firstName: '',
@@ -45,6 +48,7 @@ export default function Home() {
 
   function handleContactChange(event) {
     const { name, value } = event.target
+    setContactSuccess("")
 
     setContactForm((prev) => ({
       ...prev,
@@ -56,11 +60,30 @@ export default function Home() {
     event.preventDefault()
 
     try {
+
+      const cleanedForm = {
+        firstName: contactForm.firstName.trim(),
+        lastName: contactForm.lastName.trim(),
+        email: contactForm.email.trim(),
+        subject: contactForm.subject.trim(),
+        message: contactForm.message.trim(),
+      }
+
+      if (
+        !cleanedForm.firstName ||
+        !cleanedForm.lastName ||
+        !cleanedForm.email ||
+        !cleanedForm.subject ||
+        !cleanedForm.message
+      ) {
+        setContactError('Todos los campos son obligatorios.')
+        return
+      }
       setContactLoading(true)
       setContactError('')
       setContactSuccess('')
 
-      await sendContactMessage(contactForm)
+      await sendContactMessage(cleanedForm)
       setContactForm(initialContactForm)
       setContactSuccess('Tu mensaje fue enviado correctamente. Será respondido dentro de las siguientes 48hs hábiles.')
     } catch (err) {
@@ -116,7 +139,7 @@ export default function Home() {
             <div className="section-title">
               <h2>Recursos para vender más y trabajar mejor</h2>
               <p>
-                Material descargable para aplicar en tu cocina, mejorar tus procesos
+                Material en PDF para aplicar en tu cocina, mejorar tus procesos
                 y potenciar tu emprendimiento pastelero.
               </p>
             </div>
@@ -125,6 +148,9 @@ export default function Home() {
               {featuredProducts.slice(0, 3).map((product) => (
                 <ProductCard key={product.id} product={product} />
               ))}
+            </div >
+            <div className='btn--send-tienda'>
+              <Link className='button button--outline' to="/tienda">Ver todos los Ebooks <FaArrowRight /> </Link>
             </div>
           </div>
         </section>
@@ -140,7 +166,7 @@ export default function Home() {
 
           <div>
             <strong>02</strong>
-            <h3>Descarga inmediata</h3>
+            <h3>Visualizacion en página</h3>
             <p>Accedé a tus ebooks comprados desde tu biblioteca personal.</p>
           </div>
 
@@ -163,9 +189,7 @@ export default function Home() {
           </div>
 
           <form className="contact-form" onSubmit={handleContactSubmit}>
-            {contactError && <p className="form-error">{contactError}</p>}
-            {contactSuccess && <p className="form-success">{contactSuccess}</p>}
-
+          
             <div className="contact-form__row">
               <label>
                 Nombre
@@ -192,6 +216,8 @@ export default function Home() {
               Mensaje
               <textarea name="message" rows="6" value={contactForm.message} onChange={handleContactChange} required />
             </label>
+            {contactError && <p className="form-error">{contactError}</p>}
+            {contactSuccess && <p className="form-success">{contactSuccess}</p>}
 
             <button className="button" disabled={contactLoading}>
               {contactLoading ? 'Enviando...' : 'Enviar mensaje'}
@@ -201,37 +227,37 @@ export default function Home() {
       </section>
 
       <section className="section">
-  <div className="container contact-info-grid">
-    
-    <div>
-      <p className="eyebrow">Información</p>
-      <h2>Datos de contacto</h2>
-      <p>
-        También podés comunicarte con nosotros por otros medios.
-      </p>
-    </div>
+        <div className="container contact-info-grid">
 
-    <div className="contact-info-cards">
+          <div>
+            <p className="eyebrow">Información</p>
+            <h2>Datos de contacto</h2>
+            <p>
+              También podés comunicarte con nosotros por otros medios.
+            </p>
+          </div>
 
-      <div className="contact-card">
-        <strong>Email</strong>
-        <p>metodosucree@gmail.com</p>
-      </div>
+          <div className="contact-info-cards">
 
-      <div className="contact-card">
-        <strong>Instagram</strong>
-        <p>@metodosucree</p>
-      </div>
+            <div className="contact-card">
+              <strong><MdEmail/> Email</strong>
+              <p>metodosucree@gmail.com</p>
+            </div>
 
-      <div className="contact-card">
-        <strong>Tiktok</strong>
-        <p>@metodosucree</p>
-      </div>
+            <div className="contact-card">
+              <strong><FaInstagram/> Instagram</strong>
+              <p>@metodosucree</p>
+            </div>
 
-    </div>
+            <div className="contact-card">
+              <strong><FaTiktok/> Tiktok</strong>
+              <p>@metodosucree</p>
+            </div>
 
-  </div>
-</section>
+          </div>
+
+        </div>
+      </section>
     </>
   )
 }

@@ -96,7 +96,7 @@ export default function Success() {
           <div className="success-card">
             <p className="eyebrow">Pago aprobado</p>
             <h1>¡Compra confirmada!</h1>
-            <p>Ya asignamos tus productos a tu biblioteca.</p>
+            <p>Para acceder al Ebook debés ingresar a "Mi biblioteca"</p>
             <Link className="button" to="/biblioteca">Ir a mi biblioteca</Link>
           </div>
         </div>

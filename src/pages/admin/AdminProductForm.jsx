@@ -181,7 +181,7 @@ export default function AdminProductForm() {
         </label>
 
         <label>
-          Archivo R2 / file key
+          Enlace del archivo pcloud
           <input name="file_key" value={form.file_key} onChange={handleChange} placeholder="ebooks/archivo.pdf" />
         </label>
 

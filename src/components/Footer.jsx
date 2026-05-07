@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom"
 export default function Footer() {
   return (
     <footer className="footer">
@@ -32,6 +33,7 @@ export default function Footer() {
 
       <div className="footer-bottom">
         <span>© {new Date().getFullYear()} Método Sucrée</span>
+        <p>Desarrollado por <Link className="link-portfolio" to="https://palmier-ignacio.github.io/">Palmier Ignacio </Link></p>
       </div>
     </footer>
   )

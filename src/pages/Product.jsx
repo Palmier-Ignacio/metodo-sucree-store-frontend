@@ -71,7 +71,7 @@ export default function Product() {
 
             <ul className="check-list">
               <li>Acceso asociado a tu cuenta.</li>
-              <li>Descarga desde Mi biblioteca.</li>
+              <li>Miralo desde Mi biblioteca.</li>
               <li>Compra segura utilizando Mercado Pago.</li>
               {product.type === 'course' && (
                 <li>Preparado para módulos, videos y materiales.</li>
