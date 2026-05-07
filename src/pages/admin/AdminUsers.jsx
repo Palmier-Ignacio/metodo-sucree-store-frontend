@@ -20,7 +20,7 @@ function UsersTable({ title, users }) {
               <th>Email</th>
               <th>Rol</th>
               <th>Creado</th>
-              <th></th>
+              <th>Acciones</th>
             </tr>
           </thead>
 
